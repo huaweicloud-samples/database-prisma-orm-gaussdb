@@ -1,0 +1,62 @@
+{
+  "name": "@internal/utils",
+  "private": true,
+  "version": "8.0.0-rc.11",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": false,
+  "description": "Shared utility functions for Prisma 8",
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check . --error-on-warnings",
+    "clean": "rm -rf dist dist-tsc dist-tsc-prod coverage .tmp-output"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:8.0.0-rc.11",
+    "@repo/tsdown": "workspace:8.0.0-rc.11",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.9"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "exports": {
+    "./abortable": "./dist/abortable.mjs",
+    "./array-equal": "./dist/array-equal.mjs",
+    "./assertions": "./dist/assertions.mjs",
+    "./canonical-stringify": "./dist/canonical-stringify.mjs",
+    "./casts": "./dist/casts.mjs",
+    "./defined": "./dist/defined.mjs",
+    "./hash-content": "./dist/hash-content.mjs",
+    "./internal-error": "./dist/internal-error.mjs",
+    "./json": "./dist/json.mjs",
+    "./promise": "./dist/promise.mjs",
+    "./redact-db-url": "./dist/redact-db-url.mjs",
+    "./result": "./dist/result.mjs",
+    "./simplify-deep": "./dist/simplify-deep.mjs",
+    "./structured-error": "./dist/structured-error.mjs",
+    "./suppress-idle-connection-errors": "./dist/suppress-idle-connection-errors.mjs",
+    "./types": "./dist/types.mjs",
+    "./package.json": "./package.json"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prisma/orm.git",
+    "directory": "packages/1-framework/0-foundation/utils"
+  }
+}

@@ -1,0 +1,71 @@
+import { describe, expect, it } from 'vitest';
+import { mapIntegrityViolations } from '../../src/control-api/operations/contract-space-aggregate-loader';
+
+describe('mapIntegrityViolations', () => {
+  it('emits union kinds in meta.violations for contractUnreadable', () => {
+    const error = mapIntegrityViolations(
+      [
+        {
+          kind: 'contractUnreadable',
+          spaceId: 'ext',
+          detail: 'invalid json',
+        },
+      ],
+      'migrations',
+    );
+    expect(error?.meta?.['violations']).toEqual([
+      { kind: 'contractUnreadable', spaceId: 'ext', detail: 'invalid json' },
+    ]);
+  });
+
+  it('emits union kinds in meta.violations for structural hashMismatch', () => {
+    const error = mapIntegrityViolations(
+      [
+        {
+          kind: 'hashMismatch',
+          spaceId: 'app',
+          dirName: '20260101T0000_init',
+          stored: 'old',
+          computed: 'new',
+        },
+      ],
+      'migrations',
+    );
+    expect(error?.meta?.['violations']).toEqual([
+      {
+        kind: 'hashMismatch',
+        spaceId: 'app',
+        dirName: '20260101T0000_init',
+        stored: 'old',
+        computed: 'new',
+      },
+    ]);
+  });
+
+  it('interpolates the configured migrations dir into layout violation text', () => {
+    const error = mapIntegrityViolations(
+      [{ kind: 'orphanSpaceDir', spaceId: 'snapshots' }],
+      'migrations-postgres',
+    );
+    expect(error?.why).toContain('migrations-postgres/');
+    expect(error?.fix).toContain('migrations-postgres/<space>');
+    expect(error?.why).not.toContain('`migrations/`');
+  });
+
+  it('interpolates the configured migrations dir into structural violation fix text', () => {
+    const error = mapIntegrityViolations(
+      [
+        {
+          kind: 'hashMismatch',
+          spaceId: 'app',
+          dirName: '20260101T0000_init',
+          stored: 'old',
+          computed: 'new',
+        },
+      ],
+      'migrations-postgres',
+    );
+    expect(error?.fix).toContain('migrations-postgres');
+    expect(error?.fix).not.toContain('`migrations/`');
+  });
+});

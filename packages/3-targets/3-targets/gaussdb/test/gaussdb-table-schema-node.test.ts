@@ -1,0 +1,233 @@
+import { parseNaming } from '@internal/sql-schema-ir/naming';
+import { describe, expect, it } from 'vitest';
+import { GaussDbPolicySchemaNode } from '../src/core/schema-ir/gaussdb-policy-schema-node';
+import { GaussDbTableSchemaNode } from '../src/core/schema-ir/gaussdb-table-schema-node';
+
+const basePolicy = new GaussDbPolicySchemaNode({
+  naming: parseNaming('read_own_a1b2c3d4', 'read_own'),
+  tableName: 'profiles',
+  namespaceId: 'public',
+  operation: 'select' as const,
+  roles: ['authenticated'],
+  using: '(auth.uid() = user_id)',
+  permissive: true,
+  withCheck: undefined,
+  dependsOn: undefined,
+});
+
+const tableInput = {
+  name: 'profiles',
+  columns: {
+    id: { name: 'id', nativeType: 'int4', nullable: false },
+    user_id: { name: 'user_id', nativeType: 'int4', nullable: false },
+  },
+  foreignKeys: [],
+  uniques: [],
+  indexes: [],
+  rlsEnabled: false,
+};
+
+describe('GaussDbTableSchemaNode', () => {
+  it('id returns the table name', () => {
+    const table = new GaussDbTableSchemaNode({ ...tableInput, policies: [] });
+    expect(table.id).toBe('profiles');
+  });
+
+  it('id matches the name field', () => {
+    const table = new GaussDbTableSchemaNode({
+      name: 'orders',
+      columns: {},
+      foreignKeys: [],
+      uniques: [],
+      indexes: [],
+      rlsEnabled: false,
+    });
+    expect(table.id).toBe('orders');
+  });
+
+  it('isEqualTo matches by id (name), ignoring columns and policies', () => {
+    const a = new GaussDbTableSchemaNode({ ...tableInput, policies: [basePolicy] });
+    const same = new GaussDbTableSchemaNode({ ...tableInput, policies: [] });
+    const other = new GaussDbTableSchemaNode({ ...tableInput, name: 'other', policies: [] });
+    expect(a.isEqualTo(same)).toBe(true);
+    expect(a.isEqualTo(other)).toBe(false);
+  });
+
+  it('carries rlsEnabled as supplied', () => {
+    const enabled = new GaussDbTableSchemaNode({ ...tableInput, rlsEnabled: true, policies: [] });
+    const disabled = new GaussDbTableSchemaNode({ ...tableInput, policies: [] });
+    expect(enabled.rlsEnabled).toBe(true);
+    expect(disabled.rlsEnabled).toBe(false);
+  });
+
+  it('isEqualTo compares rlsEnabled: nodes differing only in rlsEnabled are NOT equal (the first table-attribute comparison)', () => {
+    const enabled = new GaussDbTableSchemaNode({ ...tableInput, rlsEnabled: true, policies: [] });
+    const disabled = new GaussDbTableSchemaNode({ ...tableInput, policies: [] });
+    expect(enabled.isEqualTo(disabled)).toBe(false);
+    expect(disabled.isEqualTo(enabled)).toBe(false);
+  });
+
+  it('isEqualTo holds for same name and same rlsEnabled regardless of other structure', () => {
+    const a = new GaussDbTableSchemaNode({
+      ...tableInput,
+      rlsEnabled: true,
+      policies: [basePolicy],
+    });
+    const b = new GaussDbTableSchemaNode({
+      name: 'profiles',
+      columns: {},
+      foreignKeys: [],
+      uniques: [],
+      indexes: [],
+      rlsEnabled: true,
+      policies: [],
+    });
+    expect(a.isEqualTo(b)).toBe(true);
+  });
+
+  it('rlsEnabled adds no children()', () => {
+    const table = new GaussDbTableSchemaNode({ ...tableInput, rlsEnabled: true, policies: [] });
+    expect(table.children()).toEqual([table.columns['id'], table.columns['user_id']]);
+  });
+
+  it('children() returns columns plus policies when there are no other constraints', () => {
+    const table = new GaussDbTableSchemaNode({ ...tableInput, policies: [basePolicy] });
+    expect(table.children()).toEqual([table.columns['id'], table.columns['user_id'], basePolicy]);
+  });
+
+  it('children() returns only columns when there are no policies or constraints', () => {
+    const table = new GaussDbTableSchemaNode({ ...tableInput, policies: [] });
+    expect(table.children()).toEqual([table.columns['id'], table.columns['user_id']]);
+  });
+
+  it('children() returns empty array for a table with no columns, constraints, or policies', () => {
+    const table = new GaussDbTableSchemaNode({
+      name: 'empty',
+      columns: {},
+      foreignKeys: [],
+      uniques: [],
+      indexes: [],
+      rlsEnabled: false,
+      policies: [],
+    });
+    expect(table.children()).toEqual([]);
+  });
+
+  it('children() composes columns, primary key, foreign keys, uniques, indexes, checks, and policies in that order', () => {
+    const table = new GaussDbTableSchemaNode({
+      name: 'orders',
+      columns: {
+        id: { name: 'id', nativeType: 'int4', nullable: false },
+        user_id: { name: 'user_id', nativeType: 'int4', nullable: false },
+        status: { name: 'status', nativeType: 'text', nullable: false },
+      },
+      primaryKey: { columns: ['id'] },
+      foreignKeys: [{ columns: ['user_id'], referencedTable: 'users', referencedColumns: ['id'] }],
+      uniques: [{ columns: ['user_id', 'status'] }],
+      indexes: [
+        {
+          naming: parseNaming('orders_status_idx', undefined),
+          columns: ['status'],
+          where: undefined,
+          unique: false,
+          partial: false,
+          type: undefined,
+          options: undefined,
+          annotations: undefined,
+          dependsOn: undefined,
+        },
+      ],
+      checks: [
+        {
+          naming: { kind: 'exact', name: 'chk_status' },
+          expression: `"status" IN ('active', 'inactive')`,
+          dependsOn: undefined,
+        },
+      ],
+      rlsEnabled: false,
+      policies: [basePolicy],
+    });
+
+    const children = table.children();
+    expect(children.map((c) => c.id)).toEqual([
+      'column:id',
+      'column:user_id',
+      'column:status',
+      'primary-key',
+      'foreign-key:user_id->.users(id)',
+      'unique:user_id,status',
+      'index:orders_status_idx',
+      'check:chk_status',
+      basePolicy.id,
+    ]);
+  });
+
+  it('children() order is deterministic across repeated calls', () => {
+    const table = new GaussDbTableSchemaNode({
+      name: 'orders',
+      columns: {
+        id: { name: 'id', nativeType: 'int4', nullable: false },
+        user_id: { name: 'user_id', nativeType: 'int4', nullable: false },
+      },
+      primaryKey: { columns: ['id'] },
+      foreignKeys: [{ columns: ['user_id'], referencedTable: 'users', referencedColumns: ['id'] }],
+      uniques: [],
+      indexes: [],
+      rlsEnabled: false,
+      policies: [basePolicy],
+    });
+
+    expect(table.children().map((c) => c.id)).toEqual(table.children().map((c) => c.id));
+  });
+
+  it('a primary key sentinel id never collides with a column, constraint, or policy id under the same table', () => {
+    const table = new GaussDbTableSchemaNode({
+      name: 'orders',
+      columns: {
+        id: { name: 'id', nativeType: 'int4', nullable: false },
+      },
+      primaryKey: { columns: ['id'] },
+      foreignKeys: [],
+      uniques: [],
+      indexes: [],
+      checks: [],
+      rlsEnabled: false,
+      policies: [basePolicy],
+    });
+
+    const ids = table.children().map((c) => c.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('policies defaults to empty when not supplied', () => {
+    const table = new GaussDbTableSchemaNode({ ...tableInput });
+    expect(table.policies).toEqual([]);
+  });
+
+  it('carries columns from SqlTableIR', () => {
+    const table = new GaussDbTableSchemaNode({ ...tableInput });
+    expect(Object.keys(table.columns)).toEqual(['id', 'user_id']);
+    expect(table.columns['id']?.nativeType).toBe('int4');
+  });
+
+  it('instance is frozen', () => {
+    const table = new GaussDbTableSchemaNode({ ...tableInput });
+    expect(Object.isFrozen(table)).toBe(true);
+  });
+
+  it('name field is set', () => {
+    const table = new GaussDbTableSchemaNode({ ...tableInput });
+    expect(table.name).toBe('profiles');
+  });
+
+  describe('GaussDbTableSchemaNode.is guard', () => {
+    it('returns true for a GaussDbTableSchemaNode', () => {
+      const table = new GaussDbTableSchemaNode({ ...tableInput });
+      expect(GaussDbTableSchemaNode.is(table)).toBe(true);
+    });
+
+    it('returns false for a GaussDbPolicySchemaNode', () => {
+      expect(GaussDbTableSchemaNode.is(basePolicy)).toBe(false);
+    });
+  });
+});

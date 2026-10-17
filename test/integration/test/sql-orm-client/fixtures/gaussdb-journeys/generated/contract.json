@@ -1,0 +1,397 @@
+{
+  "schemaVersion": "1",
+  "targetFamily": "sql",
+  "target": "gaussdb",
+  "profileHash": "c9113d0f472ddde41ceff36dfc41cacdf991ceea0f5d9fd85ade6983a5817719",
+  "roots": {
+    "gj_oracle_types": {
+      "model": "OracleTypes",
+      "namespace": "public"
+    },
+    "gj_posts": {
+      "model": "Post",
+      "namespace": "public"
+    },
+    "gj_users": {
+      "model": "User",
+      "namespace": "public"
+    }
+  },
+  "domain": {
+    "namespaces": {
+      "public": {
+        "models": {
+          "OracleTypes": {
+            "fields": {
+              "amount": {
+                "nullable": true,
+                "type": {
+                  "codecId": "gaussdb/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "body": {
+                "nullable": true,
+                "type": {
+                  "codecId": "gaussdb/clob@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "gaussdb/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "label": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 50
+                  }
+                }
+              },
+              "nameLabel": {
+                "nullable": true,
+                "type": {
+                  "codecId": "gaussdb/nvarchar2@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 50
+                  }
+                }
+              },
+              "payload": {
+                "nullable": true,
+                "type": {
+                  "codecId": "gaussdb/blob@1",
+                  "kind": "scalar"
+                }
+              },
+              "token": {
+                "nullable": true,
+                "type": {
+                  "codecId": "gaussdb/raw@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 32
+                  }
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "amount": {
+                  "column": "amount"
+                },
+                "body": {
+                  "column": "body"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "label": {
+                  "column": "label"
+                },
+                "nameLabel": {
+                  "column": "name_label"
+                },
+                "payload": {
+                  "column": "payload"
+                },
+                "token": {
+                  "column": "token"
+                }
+              },
+              "namespaceId": "public",
+              "table": "gj_oracle_types"
+            }
+          },
+          "Post": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "gaussdb/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "title": {
+                "nullable": false,
+                "type": {
+                  "codecId": "gaussdb/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "gaussdb/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "views": {
+                "nullable": false,
+                "type": {
+                  "codecId": "gaussdb/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "title": {
+                  "column": "title"
+                },
+                "userId": {
+                  "column": "user_id"
+                },
+                "views": {
+                  "column": "views"
+                }
+              },
+              "namespaceId": "public",
+              "table": "gj_posts"
+            }
+          },
+          "User": {
+            "fields": {
+              "bio": {
+                "nullable": true,
+                "type": {
+                  "codecId": "gaussdb/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "email": {
+                "nullable": false,
+                "type": {
+                  "codecId": "gaussdb/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "gaussdb/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "invitedById": {
+                "nullable": true,
+                "type": {
+                  "codecId": "gaussdb/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "gaussdb/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "bio": {
+                  "column": "bio"
+                },
+                "email": {
+                  "column": "email"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "invitedById": {
+                  "column": "invited_by_id"
+                },
+                "name": {
+                  "column": "name"
+                }
+              },
+              "namespaceId": "public",
+              "table": "gj_users"
+            }
+          }
+        }
+      }
+    }
+  },
+  "storage": {
+    "namespaces": {
+      "public": {
+        "entries": {
+          "table": {
+            "gj_oracle_types": {
+              "columns": {
+                "amount": {
+                  "codecId": "gaussdb/numeric@1",
+                  "nativeType": "number",
+                  "nullable": true
+                },
+                "body": {
+                  "codecId": "gaussdb/clob@1",
+                  "nativeType": "clob",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "gaussdb/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "label": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "varchar2",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 50
+                  }
+                },
+                "name_label": {
+                  "codecId": "gaussdb/nvarchar2@1",
+                  "nativeType": "nvarchar2",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 50
+                  }
+                },
+                "payload": {
+                  "codecId": "gaussdb/blob@1",
+                  "nativeType": "blob",
+                  "nullable": true
+                },
+                "token": {
+                  "codecId": "gaussdb/raw@1",
+                  "nativeType": "raw",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 32
+                  }
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "gj_posts": {
+              "columns": {
+                "id": {
+                  "codecId": "gaussdb/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "title": {
+                  "codecId": "gaussdb/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "user_id": {
+                  "codecId": "gaussdb/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "views": {
+                  "codecId": "gaussdb/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "gj_users": {
+              "columns": {
+                "bio": {
+                  "codecId": "gaussdb/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "email": {
+                  "codecId": "gaussdb/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "gaussdb/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "invited_by_id": {
+                  "codecId": "gaussdb/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "name": {
+                  "codecId": "gaussdb/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "email"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "id": "public",
+        "kind": "gaussdb-schema"
+      }
+    },
+    "storageHash": "02782874d43c4399ada535dec63bd8e87f2a85aff84724f1ddabe8d49916058c"
+  },
+  "capabilities": {
+    "gaussdb": {
+      "jsonAgg": true,
+      "limit": true,
+      "orderBy": true,
+      "returning": true
+    },
+    "sql": {
+      "checkConstraint": true,
+      "defaultInInsert": true,
+      "distinctOn": true,
+      "enums": true,
+      "returning": true,
+      "scalarList": true
+    }
+  },
+  "extensions": {},
+  "meta": {},
+  "_generated": {
+    "warning": "⚠️  GENERATED FILE - DO NOT EDIT",
+    "message": "This file is automatically generated by \"prisma contract emit\".",
+    "regenerate": "To regenerate, run: prisma contract emit"
+  }
+}

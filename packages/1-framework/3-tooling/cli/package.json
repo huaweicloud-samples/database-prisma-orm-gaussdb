@@ -1,0 +1,111 @@
+{
+  "name": "@internal/cli",
+  "private": true,
+  "version": "8.0.0-rc.11",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": false,
+  "bin": {
+    "prisma": "./dist/bin.mjs"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "typecheck": "tsc --project tsconfig.json --noEmit && tsc --project tsconfig.test.json --noEmit",
+    "lint": "biome check . --error-on-warnings",
+    "lint:fix": "biome check --write .",
+    "lint:fix:unsafe": "biome check --write --unsafe .",
+    "gallery": "tsx scripts/gallery.ts",
+    "record": "tsx scripts/record.ts",
+    "clean": "rm -rf dist dist-tsc dist-tsc-prod coverage .tmp-output"
+  },
+  "dependencies": {
+    "@internal/cli-telemetry": "workspace:8.0.0-rc.11",
+    "@internal/config": "workspace:8.0.0-rc.11",
+    "@internal/config-loader": "workspace:8.0.0-rc.11",
+    "@internal/contract": "workspace:8.0.0-rc.11",
+    "@internal/emitter": "workspace:8.0.0-rc.11",
+    "@internal/errors": "workspace:8.0.0-rc.11",
+    "@internal/framework-components": "workspace:8.0.0-rc.11",
+    "@internal/language-server": "workspace:8.0.0-rc.11",
+    "@internal/migration-tools": "workspace:8.0.0-rc.11",
+    "@internal/psl-parser": "workspace:8.0.0-rc.11",
+    "@internal/psl-printer": "workspace:8.0.0-rc.11",
+    "@internal/publish-surface": "workspace:8.0.0-rc.11",
+    "@internal/utils": "workspace:8.0.0-rc.11",
+    "arktype": "^2.2.2",
+    "ci-info": "^4.3.1",
+    "clipanion": "4.0.0-rc.4",
+    "closest-match": "^1.3.3",
+    "colorette": "^2.0.20",
+    "esbuild": "^0.28.2",
+    "jsonc-parser": "^3.3.1",
+    "package-manager-detector": "^1.8.0",
+    "pathe": "^2.0.3",
+    "string-width": "^8.2.2",
+    "strip-ansi": "^7.2.0",
+    "wrap-ansi": "^10.0.0"
+  },
+  "devDependencies": {
+    "@internal/sql-contract": "workspace:8.0.0-rc.11",
+    "@internal/sql-contract-emitter": "workspace:8.0.0-rc.11",
+    "@internal/sql-contract-ts": "workspace:8.0.0-rc.11",
+    "@internal/sql-operations": "workspace:8.0.0-rc.11",
+    "@internal/sql-runtime": "workspace:8.0.0-rc.11",
+    "@prisma/cli-engine": "0.4.0",
+    "@repo/test-utils": "workspace:8.0.0-rc.11",
+    "@repo/tsconfig": "workspace:8.0.0-rc.11",
+    "@repo/tsdown": "workspace:8.0.0-rc.11",
+    "@types/node": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "@prisma/cli-engine": "0.4.0",
+    "typescript": ">=5.9"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/exports/index.d.mts",
+      "import": "./dist/exports/index.mjs"
+    },
+    "./config-types": {
+      "types": "./dist/exports/config-types.d.mts",
+      "import": "./dist/exports/config-types.mjs"
+    },
+    "./init-output": {
+      "types": "./dist/exports/init-output.d.mts",
+      "import": "./dist/exports/init-output.mjs"
+    },
+    "./migration-cli": {
+      "types": "./dist/migration-cli.d.mts",
+      "import": "./dist/migration-cli.mjs"
+    },
+    "./control-api": {
+      "types": "./dist/exports/control-api.d.mts",
+      "import": "./dist/exports/control-api.mjs"
+    },
+    "./control-api/testing": {
+      "types": "./dist/exports/control-api-testing.d.mts",
+      "import": "./dist/exports/control-api-testing.mjs"
+    }
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prisma/orm.git",
+    "directory": "packages/1-framework/3-tooling/cli"
+  }
+}

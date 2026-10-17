@@ -1,0 +1,5 @@
+// use prisma-8
+
+model User {
+  id Char(24) @id @default(cuid(2))
+}

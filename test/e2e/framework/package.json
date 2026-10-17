@@ -1,0 +1,33 @@
+{
+  "name": "e2e-tests",
+  "version": "8.0.0-rc.11",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "lint": "biome check . --error-on-warnings",
+    "lint:fix": "biome check --write .",
+    "lint:fix:unsafe": "biome check --write --unsafe .",
+    "emit": "prisma contract emit --config test/fixtures/prisma.config.ts && prisma contract emit --config test/sqlite/fixtures/prisma.config.ts",
+    "emit:check": "pnpm emit && git diff --exit-code test/fixtures/generated/ test/sqlite/fixtures/generated/",
+    "clean": "rm -rf dist dist-tsc dist-tsc-prod coverage .tmp-output"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:8.0.0-rc.11",
+    "@types/node": "catalog:",
+    "@types/pg": "catalog:",
+    "pg": "catalog:",
+    "temporal-polyfill": "^1.0.4",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "dependencies": {
+    "@prisma/orm-extension-arktype-json": "workspace:8.0.0-rc.11",
+    "@prisma/orm-extension-pgvector": "workspace:8.0.0-rc.11",
+    "@prisma/orm-postgres": "workspace:8.0.0-rc.11",
+    "@prisma/orm-sqlite": "workspace:8.0.0-rc.11",
+    "@repo/test-utils": "workspace:8.0.0-rc.11",
+    "arktype": "catalog:"
+  }
+}

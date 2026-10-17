@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+    tmpfs:
+      - /var/lib/postgresql/data
+  gaussdb:
+    image: ${GAUSSDB_IMAGE:-gaussdb-ha:2.0}
+    profiles: ["gaussdb"]
+    ports:
+      - "15432:5432"
+    volumes:
+      - gaussdb-data:/opt/gaussdb/data
+    # TODO: the local gaussdb-ha:2.0 image's entrypoint only restarts an
+    # existing data directory (gs_ctl start); it runs no initdb and consumes
+    # no GS_* environment variables, so a fresh `docker compose --profile
+    # gaussdb up` cannot initialize an instance by itself. Seed the
+    # gaussdb-data volume first (the running local instance uses the
+    # gaussdb-central-data volume, A-compat mode, user appuser / password
+    # <PASSWORD>) or extend the entrypoint with an init step before relying
+    # on this service. Real connection strings reach tests through the
+    # GAUSSDB_URL environment variable at runtime and never live in the repo.
+volumes:
+  gaussdb-data:

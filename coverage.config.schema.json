@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Coverage Warning Configuration",
+  "description": "Configuration for packages with time-limited coverage warning exceptions and coverage exclusions",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Path to this JSON schema"
+    },
+    "description": {
+      "type": "string",
+      "description": "Overall description of the coverage warning-only package system"
+    },
+    "warningOnly": {
+      "type": "array",
+      "description": "List of packages whose coverage thresholds don't block CI through their expiry date",
+      "items": {
+        "type": "object",
+        "required": ["package", "reason", "addedDate", "expiryDays"],
+        "properties": {
+          "package": {
+            "type": "string",
+            "description": "Package path relative to packages/ directory",
+            "minLength": 1,
+            "pattern": "^(?!packages/)(?!/)(?!\\.?/)(?![A-Za-z]:)(?!.*(?://|/\\.(?:/|$)))(?!.*\\.\\.)(?!.*[*?{}\\[\\]])[^\\\\]+$"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why this package is warning-only",
+            "minLength": 10
+          },
+          "addedDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Date when warning was added (YYYY-MM-DD)",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "expiryDays": {
+            "type": "integer",
+            "description": "Days until expiry (typically 90)",
+            "minimum": 1,
+            "maximum": 180
+          },
+          "assignee": {
+            "type": ["string", "null"],
+            "description": "Optional assignee username (e.g., @username)"
+          },
+          "linear": {
+            "type": ["string", "null"],
+            "description": "Optional Linear ticket URL or reference (e.g., https://linear.app/...)"
+          },
+          "notes": {
+            "type": ["string", "null"],
+            "description": "Optional additional context or coordination notes"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "excludedPackages": {
+      "type": "array",
+      "description": "Package paths relative to packages/ that are omitted from coverage collection and threshold composition",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^(?!packages/)(?!/)(?!\\.?/)(?![A-Za-z]:)(?!.*(?://|/\\.(?:/|$)))(?!.*\\.\\.)(?!.*[*?{}\\[\\]])[^\\\\]+$"
+      },
+      "uniqueItems": true
+    }
+  },
+  "required": ["warningOnly", "excludedPackages"],
+  "additionalProperties": false
+}

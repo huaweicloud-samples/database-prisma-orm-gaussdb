@@ -1,0 +1,5 @@
+// use prisma-8
+
+model User {
+  id Char(21) @id @default(nanoid())
+}

@@ -1,0 +1,34 @@
+model User {
+  id          Int     @id
+  name        String
+  email       String  @unique
+  invitedById Int?    @map("invited_by_id")
+  bio         String?
+
+  @@map("gj_users")
+}
+
+model Post {
+  id     Int    @id
+  title  String
+  userId Int    @map("user_id")
+  views  Int
+
+  @@map("gj_posts")
+}
+
+// Oracle-compat types (A-compat instances). Round-trips through the real
+// instance: number rides the numeric channel, varchar2 the varchar channel
+// (byte semantics - the columns are sized so the journeys stay within them),
+// and nvarchar2/clob/blob/raw exercise their private-OID codecs.
+model OracleTypes {
+  id        Int          @id
+  amount    Number?
+  label     VarChar2(50)?
+  nameLabel NVarChar2(50)? @map("name_label")
+  body      Clob?
+  payload   Blob?
+  token     Raw(32)?
+
+  @@map("gj_oracle_types")
+}

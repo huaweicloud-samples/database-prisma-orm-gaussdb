@@ -1,0 +1,31 @@
+---
+description: TypeScript and architecture patterns for this codebase
+globs: ["packages/**/*.ts", "packages/**/*.tsx", "examples/**/*.ts", "examples/**/*.tsx", "test/**/*.ts", "test/**/*.tsx"]
+alwaysApply: false
+---
+
+# TypeScript and Architecture Patterns
+
+This rulecard is intentionally short. For deeper examples, see `docs/reference/typescript-patterns.md`.
+
+## Focused rulecards
+
+- `.cursor/rules/generic-parameters.mdc` — Generic parameter defaults
+- `.cursor/rules/interface-factory-pattern.mdc` — Interface-based design + factory functions
+- `.cursor/rules/type-predicates.mdc` — Replace blind casts with type predicates
+- `.cursor/rules/test-mocking-patterns.mdc` — Type assertions and mocking patterns in tests
+
+## Quick reminders
+
+- **No blind casts in production**: `as unknown as X` is forbidden outside tests. Prefer type predicates or fix the type surface.
+- **Export interfaces; construct via factories**: keep classes as private implementation details.
+- **No generic defaults unless meaningful**: defaults are semantics, not “flexibility”.
+- **Test-only escapes**: `@ts-expect-error` and double casts are acceptable only in test files, with a short explanation.
+- **Key id-like string parameters on the map they come from**: a `Record<string, string>` constraint widens `'pg/int8@1'` to `string`; `keyof CT & string` preserves the literal and gives completions. Reach for the keyed union whenever a string is semantically an id from a known map.
+- **`ReturnType` of an overloaded function resolves to the last overload.** Adding a new last overload, or reordering the existing ones so a different signature ends up last, silently retypes every `ReturnType<typeof fn>` consumer; an overload inserted earlier leaves them alone. Order overloads most-specific first and most general last, and pin the inferred type with a type test so a change to the last signature fails loudly.
+
+## Related rules
+
+- `.cursor/rules/no-inline-imports.mdc`
+- `.cursor/rules/object-hasown.mdc`
+- `.cursor/rules/prefer-assertions-over-defensive-checks.mdc`

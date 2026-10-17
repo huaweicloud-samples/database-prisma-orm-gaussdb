@@ -1,0 +1,23 @@
+// use prisma-8
+
+model TelemetryEvent {
+  id             BigInt   @id @default(autoincrement())
+  ingestedAt     DateTime @default(now())
+  installationId String
+  version        String
+  command        String
+  flags          Jsonb
+  runtimeName    String
+  runtimeVersion String
+  os             String
+  arch           String
+  packageManager String?
+  databaseTarget String?
+  tsVersion      String?
+  agent          String?
+  extensions     Jsonb
+  exitCode       Int?
+
+  @@index([ingestedAt])
+  @@map("telemetry_event")
+}
